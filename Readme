@@ -1,1 +1,11 @@
 A python version of coffeemachine.
+
+Coffee Machine Program Requirments -
+-- Prompt user by asking "What would you like? (espresso/latte/cappuccino):"
+-- Turn off the Coffee Machine by entering "Off" to the Prompt.
+-- Print report.
+-- Check resources sufficient?
+-- Process coins.
+-- Check transaction successful?
+-- Make Coffee.
+ 
