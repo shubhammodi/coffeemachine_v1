@@ -27,7 +27,7 @@ MENU = {
 
 profit = 0
 resources = {
-    "water": 300,
+    "water": 500,
     "milk": 200,
     "coffee": 100,
 }
@@ -79,7 +79,7 @@ while inputvalue != "off":
                 resources["coffee"] = resources["coffee"] - required_coffee
                 print(f"Here is your {inputvalue}.")
                 # print_report(resources, profit)
-    else:
+    elif inputvalue == "latte" or inputvalue == "cappuccino":
         required_water = MENU[inputvalue]["ingredients"]["water"]
         required_coffee = MENU[inputvalue]["ingredients"]["coffee"]
         required_milk = MENU[inputvalue]["ingredients"]["milk"]
