@@ -34,6 +34,7 @@ resources = {
 
 inputvalue = ''
 insertcoin = {"quarters":.25,"dimes":.1,"nickel":.05,"pennies":.01}
+ison = True
 
 def print_report(res, profit):
     # pprint.pprint(res)
@@ -44,76 +45,54 @@ def print_report(res, profit):
             print(key.capitalize()+": " + str(value) + "g") 
     print("Money: $"+str(profit))
 
-while inputvalue != "off":
-    inputvalue = input("What would you like? (espresso/latte/cappuccino):")
-    
-    print(inputvalue)
-    if inputvalue == "report":
-        print_report(resources, profit)
-    elif inputvalue == "espresso":
-        required_water = MENU[inputvalue]["ingredients"]["water"]
-        required_coffee = MENU[inputvalue]["ingredients"]["coffee"]
-        if required_water>resources["water"]:
-            print("Sorry there is not enough water.")
-        elif required_coffee>resources["coffee"]:
-            print("Sorry there is not enough coffee.")
-        else:
-            print("Please insert coins.")
-            monetaryvalue = 0.0
-            for coin, value in insertcoin.items():
-                num = int(input("How many "+coin+"?"))
-                monetaryvalue =  monetaryvalue + num*value
-            if monetaryvalue < MENU[inputvalue]["cost"]:
-                print("Sorry that's not enough money. Money refunded.")
-            elif monetaryvalue > MENU[inputvalue]["cost"]:
-                monetaryvalue = monetaryvalue - MENU[inputvalue]["cost"]
-                offerchange = round(monetaryvalue, 2)
-                print(f"Here is ${offerchange} dollars in change.")
-                profit = profit + MENU[inputvalue]["cost"]
-                resources["water"] = resources["water"] - required_water
-                resources["coffee"] = resources["coffee"] - required_coffee
-                print(f"Here is your {inputvalue}.")
-            else:
-                profit = profit + monetaryvalue
-                resources["water"] = resources["water"] - required_water
-                resources["coffee"] = resources["coffee"] - required_coffee
-                print(f"Here is your {inputvalue}.")
-                # print_report(resources, profit)
-    elif inputvalue == "latte" or inputvalue == "cappuccino":
-        required_water = MENU[inputvalue]["ingredients"]["water"]
-        required_coffee = MENU[inputvalue]["ingredients"]["coffee"]
-        required_milk = MENU[inputvalue]["ingredients"]["milk"]
-        if required_water>resources["water"]:
-            print("Sorry there is not enough water.")
-        elif required_coffee>resources["coffee"]:
-            print("Sorry there is not enough coffee.")
-        elif required_milk>resources["milk"]:
-            print("Sorry there is not enough milk.")
-        else:
-            print("Please insert coins.")
-            monetaryvalue = 0.0
-            for coin, value in insertcoin.items():
-                num = int(input("How many "+coin+"?"))
-                monetaryvalue =  monetaryvalue + num*value
-            if monetaryvalue < MENU[inputvalue]["cost"]:
-                print("Sorry that's not enough money. Money refunded.")
-            elif monetaryvalue > MENU[inputvalue]["cost"]:
-                monetaryvalue = monetaryvalue - MENU[inputvalue]["cost"]
-                offerchange = round(monetaryvalue, 2)
-                print(f"Here is ${offerchange} dollars in change.")
-                profit = profit + MENU[inputvalue]["cost"]
-                resources["water"] = resources["water"] - required_water
-                resources["coffee"] = resources["coffee"] - required_coffee
-                resources["milk"] = resources["milk"] - required_milk
-                print(f"Here is your {inputvalue}.")
-            else:
-                profit = profit + monetaryvalue
-                resources["water"] = resources["water"] - required_water
-                resources["coffee"] = resources["coffee"] - required_coffee
-                resources["milk"] = resources["milk"] - required_milk
-                print(f"Here is your {inputvalue}.")
-                # print_report(resources, profit)
+def is_resources_sufficient(drinkname):
+    """Returns True when order can be made, False if ingredients are insufficient."""
+    for ingredients, quantity in drinkname["ingredients"].items():
+        if resources[ingredients]<quantity:
+            print(f"Sorry there is not enough {ingredients}.")
+            return False
+    return True
 
+def process_coins():
+    """Returns the total calculated from coins inserted."""
+    print("Please insert coins.")
+    monetaryvalue = 0.0
+    for coin, value in insertcoin.items():
+        num = int(input("How many "+coin+"? "))
+        monetaryvalue =  monetaryvalue + num*value
+    return monetaryvalue
+
+def is_transaction_successful(moneyreceived, drinkcost):
+    """Return True when the payment is accepted, or False if money is insufficient."""
+    if moneyreceived < drinkcost:
+        print("Sorry that's not enough money. Money refunded.")
+        return False
+    else:
+        global profit
+        offerchange = round(moneyreceived - drinkcost, 2)
+        print(f"Here is ${offerchange} dollars in change.")
+        profit = profit + drinkcost
+        return True
+
+def make_coffee(drink_name, order_ingredients):
+    """Deduct the required ingredients from the resources."""
+    for item in order_ingredients:
+        resources[item] -= order_ingredients[item]
+    print(f"Here is your {drink_name} ☕️. Enjoy!")
+
+while ison:
+    inputvalue = input("What would you like? (espresso/latte/cappuccino):")
+    print(inputvalue)
+    if inputvalue == "off":
+        ison = False   
+    elif inputvalue == "report":
+        print_report(resources, profit)
+    else:
+        drink = MENU[inputvalue]
+        if is_resources_sufficient(drink):
+            payment = process_coins()
+            if is_transaction_successful(payment, drink["cost"]):
+                make_coffee(inputvalue, drink["ingredients"])
 
             
 
