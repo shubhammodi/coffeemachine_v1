@@ -1,6 +1,6 @@
-A python version of coffeemachine.
+This is an object oriented python version of coffeemachine.
 
-Coffee Machine Program Requirments -
+Coffee Machine Program Requirments would be same as earlier -
 -- Prompt user by asking "What would you like? (espresso/latte/cappuccino):"
 -- Turn off the Coffee Machine by entering "Off" to the Prompt.
 -- Print report.
